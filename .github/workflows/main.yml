@@ -24,7 +24,7 @@ jobs:
 
       - name: Create RDP User (Fixed Password)
         run: |
-          $password = "MyRDP@123"
+          $password = "MyRDPaccess#2025"
           $securePass = ConvertTo-SecureString $password -AsPlainText -Force
 
           if (-not (Get-LocalUser -Name "RDP" -ErrorAction SilentlyContinue)) {
@@ -49,7 +49,6 @@ jobs:
         run: |
           & "$env:ProgramFiles\Tailscale\tailscale.exe" up --authkey=${{ secrets.TAILSCALE_AUTH_KEY }} --hostname=github-rdp
 
-          # Fetch Tailscale IP
           $tsIP = & "$env:ProgramFiles\Tailscale\tailscale.exe" ip -4
           echo "TAILSCALE_IP=$tsIP" >> $env:GITHUB_ENV
 
