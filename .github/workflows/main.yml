@@ -22,9 +22,11 @@ jobs:
 
           Restart-Service -Name TermService -Force
 
-      - name: Create RDP User (Fixed Password)
+      - name: Create RDP User (Auto Password)
         run: |
-          $password = "MyRDPaccess#2025"
+          # Generate Windows-compatible strong password (14+ chars)
+          Add-Type -AssemblyName System.Web
+          $password = [System.Web.Security.Membership]::GeneratePassword(16,3)
           $securePass = ConvertTo-SecureString $password -AsPlainText -Force
 
           if (-not (Get-LocalUser -Name "RDP" -ErrorAction SilentlyContinue)) {
@@ -48,7 +50,6 @@ jobs:
       - name: Connect Tailscale
         run: |
           & "$env:ProgramFiles\Tailscale\tailscale.exe" up --authkey=${{ secrets.TAILSCALE_AUTH_KEY }} --hostname=github-rdp
-
           $tsIP = & "$env:ProgramFiles\Tailscale\tailscale.exe" ip -4
           echo "TAILSCALE_IP=$tsIP" >> $env:GITHUB_ENV
 
